@@ -88,13 +88,21 @@ Request-stage captures consistently showed:
 
 ## Optional sample PCAPs
 
-If you do not want to run the lab, curated example PCAPs can be placed under:
+If you do not want to run the lab, curated example PCAPs are included under:
 
 - `./sample-pcaps/`
 
-A staging note is already included in:
+See:
 
 - `./sample-pcaps/README.md`
+
+Included samples currently cover:
+
+- handshake plus single HTTP request
+- handshake plus multiple HTTP requests
+- request-stage activity after setup is already up
+- reconnect-oriented handshake traffic
+- one older duplicate-artifact capture retained for comparison
 
 ## Output directory
 
