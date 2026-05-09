@@ -38,6 +38,12 @@ Open:
 
 - <http://127.0.0.1:23456>
 
+## Lab guide
+
+For a friendlier walkthrough that ties together the lab, included sample PCAPs, and the detection materials, see:
+
+- [`docs/LAB-GUIDE.md`](docs/LAB-GUIDE.md)
+
 ## Main workflow
 
 1. Initialize Routing
