@@ -1,0 +1,125 @@
+EarthWorm Lab - Collection Steps
+
+Purpose
+- Collect two different PCAP types from the EarthWorm reverse SOCKS lab:
+  1. Handshake PCAP
+  2. Tunnel-activity PCAP
+
+Why collect both
+- Handshake PCAP captures the initial reverse connection and setup behavior.
+- Tunnel-activity PCAP captures what happens after the tunnel is already established.
+- These support different kinds of detection work and should be treated as separate lab artifacts.
+
+Lab URL
+- http://127.0.0.1:23456
+
+Before each collection
+- Make sure the lab is running.
+- Open the browser UI.
+- If a prior run may still be active, click:
+  - Reset Lab State
+- Wait a moment, then confirm the status indicators are not showing an old connected session.
+
+==================================================
+Collection 1 - Handshake PCAP
+==================================================
+
+Goal
+- Capture the reverse connection and setup behavior, plus a small amount of follow-on tunnel traffic.
+
+Steps
+1. Click Reset Lab State.
+2. Click Initialize Routing.
+3. Click Start Server.
+4. Confirm the server indicators show listeners on:
+   - :8888
+   - :1080
+5. Click Start Capture.
+6. Click Connect Client.
+7. Wait for the tunnel-connected indicator to show connected.
+8. Click Test SOCKS Through Tunnel.
+9. Wait for the test to complete successfully.
+10. Click Stop Capture / Save.
+11. In the Downloads section, download the saved PCAP.
+12. Rename the downloaded file to something durable, for example:
+    - earthworm-handshake-http-test-001.pcap
+
+Expected content
+- Client -> server reverse connection toward 203.0.113.10:8888
+- Setup/establishment behavior
+- Traffic associated with the SOCKS test
+- HTTP request to the target through the tunnel
+
+Recommended notes to record with the PCAP
+- This is the handshake-oriented collection.
+- Capture started before client connect.
+- Includes tunnel setup and test traffic.
+
+==================================================
+Collection 2 - Tunnel-Activity PCAP
+==================================================
+
+Goal
+- Capture traffic sent through an already-established tunnel, with less focus on the initial connection.
+
+Steps
+1. Click Reset Lab State.
+2. Wait a moment to ensure the old session is gone.
+3. Click Initialize Routing.
+4. Click Start Server.
+5. Click Connect Client.
+6. Wait for the tunnel-connected indicator to show connected.
+7. Click Start Capture.
+8. Click Test SOCKS Through Tunnel.
+9. If desired, repeat the SOCKS test one or more times to generate a slightly richer PCAP.
+10. Click Stop Capture / Save.
+11. In the Downloads section, download the saved PCAP.
+12. Rename the downloaded file to something durable, for example:
+    - earthworm-tunnel-activity-http-test-001.pcap
+
+Expected content
+- Little or none of the initial reverse connection setup
+- SOCKS-mediated traffic through an already-established tunnel
+- HTTP request and response content associated with the tunnel test
+
+Recommended notes to record with the PCAP
+- This is the tunnel-activity collection.
+- Capture started after client connect.
+- Focus is on post-establishment traffic.
+
+==================================================
+Suggested file-management habit
+==================================================
+
+For each saved PCAP, also keep a short note with:
+- PCAP name
+- Collection type: handshake or tunnel-activity
+- Date/time collected
+- Whether the SOCKS test was run once or multiple times
+- Any UI observations or unusual behavior
+
+Example names
+- earthworm-handshake-http-test-001.pcap
+- earthworm-tunnel-activity-http-test-001.pcap
+
+==================================================
+Quick operator summary
+==================================================
+
+Handshake PCAP
+- Reset Lab State
+- Initialize Routing
+- Start Server
+- Start Capture
+- Connect Client
+- Test SOCKS Through Tunnel
+- Stop Capture / Save
+
+Tunnel-activity PCAP
+- Reset Lab State
+- Initialize Routing
+- Start Server
+- Connect Client
+- Start Capture
+- Test SOCKS Through Tunnel
+- Stop Capture / Save

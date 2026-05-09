@@ -1,0 +1,167 @@
+EarthWorm Lab - Multi-PCAP Testing Steps
+
+Purpose
+- Collect multiple PCAPs to test how stable the EarthWorm setup sequence is across repeated runs.
+- Support later Suricata and Zeek detection work.
+- Focus on repeated observations of the early control/setup behavior and the follow-on SOCKS activity.
+
+Important note
+- Before every test run, click Reset Lab State.
+- Save each resulting PCAP with a durable name and keep brief notes.
+
+Recommended naming pattern
+- ew-test-01-handshake-single-http.pcap
+- ew-test-02-handshake-double-http.pcap
+- ew-test-03-tunnel-activity-single-http.pcap
+- ew-test-04-reconnect-handshake.pcap
+- ew-test-05-handshake-delayed-http.pcap
+- ew-test-06-tunnel-activity-multi-http.pcap
+
+==================================================
+Test 1 - Baseline handshake PCAP
+==================================================
+
+Goal
+- Capture the initial setup sequence and one successful tunnel test.
+
+Steps
+1. Click Reset Lab State.
+2. Click Initialize Routing.
+3. Click Start Server.
+4. Click Start Capture.
+5. Click Connect Client.
+6. Wait for tunnel connected.
+7. Click Test SOCKS Through Tunnel once.
+8. Click Stop Capture / Save.
+9. Download the PCAP.
+10. Rename it to:
+    - ew-test-01-handshake-single-http.pcap
+
+==================================================
+Test 2 - Handshake plus repeated tunnel use
+==================================================
+
+Goal
+- Capture the same setup sequence, then multiple uses of the tunnel.
+
+Steps
+1. Click Reset Lab State.
+2. Click Initialize Routing.
+3. Click Start Server.
+4. Click Start Capture.
+5. Click Connect Client.
+6. Wait for tunnel connected.
+7. Click Test SOCKS Through Tunnel three times, with 1-2 seconds between clicks.
+8. Click Stop Capture / Save.
+9. Download the PCAP.
+10. Rename it to:
+    - ew-test-02-handshake-double-http.pcap
+
+==================================================
+Test 3 - Tunnel-activity-only PCAP
+==================================================
+
+Goal
+- Capture activity after setup is already complete.
+
+Steps
+1. Click Reset Lab State.
+2. Click Initialize Routing.
+3. Click Start Server.
+4. Click Connect Client.
+5. Wait for tunnel connected.
+6. Click Start Capture.
+7. Click Test SOCKS Through Tunnel once.
+8. Click Stop Capture / Save.
+9. Download the PCAP.
+10. Rename it to:
+    - ew-test-03-tunnel-activity-single-http.pcap
+
+==================================================
+Test 4 - Fresh reconnect stability test
+==================================================
+
+Goal
+- Check whether the early setup bytes remain stable after a full reset and reconnect.
+
+Steps
+1. Click Reset Lab State.
+2. Click Initialize Routing.
+3. Click Start Server.
+4. Click Start Capture.
+5. Click Connect Client.
+6. Wait for tunnel connected.
+7. Do not run the SOCKS test yet.
+8. Click Stop Capture / Save.
+9. Download the PCAP.
+10. Rename it to:
+    - ew-test-04-reconnect-handshake.pcap
+
+==================================================
+Test 5 - Handshake with delayed tunnel use
+==================================================
+
+Goal
+- Separate setup timing from later tunnel activity.
+
+Steps
+1. Click Reset Lab State.
+2. Click Initialize Routing.
+3. Click Start Server.
+4. Click Start Capture.
+5. Click Connect Client.
+6. Wait for tunnel connected.
+7. Wait 10 seconds.
+8. Click Test SOCKS Through Tunnel once.
+9. Click Stop Capture / Save.
+10. Download the PCAP.
+11. Rename it to:
+    - ew-test-05-handshake-delayed-http.pcap
+
+==================================================
+Test 6 - Tunnel activity with multiple uses after setup
+==================================================
+
+Goal
+- Check whether follow-on streams behave consistently after setup is complete.
+
+Steps
+1. Click Reset Lab State.
+2. Click Initialize Routing.
+3. Click Start Server.
+4. Click Connect Client.
+5. Wait for tunnel connected.
+6. Click Start Capture.
+7. Click Test SOCKS Through Tunnel three times, with 1-2 seconds between clicks.
+8. Click Stop Capture / Save.
+9. Download the PCAP.
+10. Rename it to:
+    - ew-test-06-tunnel-activity-multi-http.pcap
+
+==================================================
+Notes to keep for every test
+==================================================
+
+For each downloaded PCAP, record:
+- PCAP filename
+- test number
+- date/time collected
+- whether capture started before or after client connect
+- how many SOCKS test clicks were run
+- whether the UI showed any bind/reconnect issues
+- whether the early 6-byte setup messages were present
+- whether SOCKS negotiation followed immediately after
+
+==================================================
+Suggested review focus after collection
+==================================================
+
+For the handshake-oriented PCAPs, check whether you consistently see:
+- early small 6-byte control messages
+- ordered setup behavior
+- transition into SOCKS negotiation
+
+For the tunnel-activity-only PCAPs, check whether you consistently see:
+- follow-on stream creation
+- SOCKS negotiation and proxied payloads
+- reduced or absent initial setup bytes

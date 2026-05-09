@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>EarthWorm Reverse SOCKS PCAP Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>EarthWorm Reverse SOCKS PCAP Lab</h1>
+      <p class="subtitle">Local-only lab for validating detections and collecting PCAPs.</p>
+    </div>
+    <div class="pill" id="capturePill">Capture: checking…</div>
+  </header>
+
+  <main class="grid">
+    <section class="card wide">
+      <h2>Lab Map</h2>
+      <div class="map">
+        <div class="node client">
+          <div class="node-title">Client / Internal</div>
+          <div class="ip">{{ client_ip }}</div>
+          <div class="small">ew -s rssocks</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node router">
+          <div class="node-title">Router</div>
+          <div class="ip">10.1.1.254 / 203.0.113.254</div>
+          <div class="small">capture path</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node server">
+          <div class="node-title">Server / Public-looking</div>
+          <div class="ip">{{ server_ip }}</div>
+          <div class="small">ew -s rcsocks -l 1080 -e 8888</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node target">
+          <div class="node-title">Target Web</div>
+          <div class="ip">{{ target_ip }}</div>
+          <div class="small">nginx:80</div>
+        </div>
+      </div>
+      <div class="status-row">
+        <div class="status-item"><span class="dot" id="server8888Dot"></span>Reverse listener :8888</div>
+        <div class="status-item"><span class="dot" id="server1080Dot"></span>SOCKS listener :1080</div>
+        <div class="status-item"><span class="dot" id="tunnelDot"></span>Tunnel connected</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Server</h2>
+      <div class="button-row">
+        <button data-action="init">Initialize Routing</button>
+        <button data-action="lab-reset" class="secondary">Reset Lab State</button>
+        <button data-action="server-start">Start Server</button>
+        <button data-action="server-reset" class="secondary">Reset Server</button>
+      </div>
+      <pre id="serverLog" class="logbox"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Client</h2>
+      <div class="button-row">
+        <button data-action="client-connect">Connect Client</button>
+        <button data-action="client-reset" class="secondary">Reset Client</button>
+        <button data-action="test-ping" class="secondary">Test Routing / Ping</button>
+      </div>
+      <pre id="clientLog" class="logbox"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Capture</h2>
+      <div class="button-row">
+        <button data-action="capture-start">Start Capture</button>
+        <button data-action="capture-stop" class="secondary">Stop Capture / Save</button>
+        <button data-action="test-socks" class="secondary">Test SOCKS Through Tunnel</button>
+      </div>
+      <div class="kv">
+        <div><span>Current PCAP</span><strong id="captureFile">—</strong></div>
+        <div><span>Size</span><strong id="captureSize">0 B</strong></div>
+      </div>
+      <pre id="captureLog" class="logbox"></pre>
+    </section>
+
+    <section class="card">
+      <h2>EarthWorm Binary Check</h2>
+      <div class="small quiet">Downloaded inside the container build from the configured mirror. This is only a lightweight static sanity pass, not a full audit.</div>
+      <div class="artifact">
+        <h3>SHA256</h3>
+        <pre id="ewHash" class="logbox compact"></pre>
+      </div>
+      <div class="artifact">
+        <h3>File Type</h3>
+        <pre id="ewFile" class="logbox compact"></pre>
+      </div>
+      <div class="artifact">
+        <h3>Strings (head)</h3>
+        <pre id="ewStrings" class="logbox compact"></pre>
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>Downloads</h2>
+      <div id="pcapList" class="downloads"></div>
+    </section>
+
+    <section class="card wide">
+      <h2>Activity</h2>
+      <pre id="activityLog" class="logbox big"></pre>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

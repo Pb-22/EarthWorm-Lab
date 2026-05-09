@@ -1,0 +1,85 @@
+# EarthWorm draft detections
+# Built from observed lab traffic on 2026-05-09.
+# These are draft rules and should be tuned against more PCAPs before wider use.
+
+# --- Setup stage control sequence ---
+
+alert tcp any any -> any any (
+    msg:"EARTHWORM setup stage marker 01 01";
+    flow:established,to_server;
+    content:"|01 01 00 00 00 00|";
+    depth:6;
+    xbits:set,ew.setup.stage1,track flow,expire 300;
+    noalert;
+    classtype:trojan-activity;
+    sid:9906001;
+    rev:1;
+)
+
+alert tcp any any -> any any (
+    msg:"EARTHWORM setup stage marker 01 02";
+    flow:established,to_server;
+    xbits:isset,ew.setup.stage1,track flow;
+    content:"|01 02 00 00 00 00|";
+    distance:0;
+    within:64;
+    xbits:set,ew.setup.stage2,track flow,expire 300;
+    noalert;
+    classtype:trojan-activity;
+    sid:9906002;
+    rev:1;
+)
+
+alert tcp any any -> any any (
+    msg:"EARTHWORM Setup Stage Control Sequence";
+    flow:established,to_server;
+    xbits:isset,ew.setup.stage2,track flow;
+    content:"|01 03 00 00 00 00|";
+    distance:0;
+    within:128;
+    classtype:trojan-activity;
+    metadata:confidence high, deployment Perimeter, affected_product Any;
+    sid:9906003;
+    rev:1;
+)
+
+# --- Post setup request stage with SOCKS negotiation ---
+
+alert tcp any any -> any any (
+    msg:"EARTHWORM request stage marker 01 04";
+    flow:established,to_server;
+    content:"|01 04 00 00 00 00|";
+    depth:6;
+    xbits:set,ew.request.stage1,track flow,expire 300;
+    noalert;
+    classtype:trojan-activity;
+    sid:9906004;
+    rev:1;
+)
+
+alert tcp any any -> any any (
+    msg:"EARTHWORM request stage marker 01 05";
+    flow:established,to_server;
+    xbits:isset,ew.request.stage1,track flow;
+    content:"|01 05 00 00 00 00|";
+    distance:0;
+    within:64;
+    xbits:set,ew.request.stage2,track flow,expire 300;
+    noalert;
+    classtype:trojan-activity;
+    sid:9906005;
+    rev:1;
+)
+
+alert tcp any any -> any any (
+    msg:"EARTHWORM Post Setup Request Stage SOCKS Sequence";
+    flow:established,to_server;
+    xbits:isset,ew.request.stage2,track flow;
+    content:"|05 02 00 01|";
+    distance:0;
+    within:32;
+    classtype:trojan-activity;
+    metadata:confidence medium, deployment Perimeter, affected_product Any;
+    sid:9906006;
+    rev:1;
+)
