@@ -12,7 +12,7 @@ These curated captures are included for people who want to inspect EarthWorm lab
 - `ew-test-05-handshake-delayed-http.pcap` — fresh setup sequence with delayed request activity
 - `ew-test-06-tunnel-activity-multi-http.pcap` — request-stage activity with multiple tunneled HTTP requests
 
-## Pool-number variant set (continued numbering)
+## Pool-number / Pygmy Goat testing
 
 These `ew-test-07` through `ew-test-10` captures were generated on May 16, 2026 from the current EarthWorm lab container to extend the public sample set with synthetic Pygmy-Goat-style pool-number cases.
 
