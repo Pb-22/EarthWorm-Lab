@@ -109,7 +109,43 @@ Included samples currently cover:
 - request-stage activity after setup is already up
 - reconnect-oriented handshake traffic
 - one older duplicate-artifact capture retained for comparison
+- pool-disabled and pool-enabled synthetic variants continuing the public numbering through `ew-test-10`
+
+## Pygmy Goat and pool-number follow-on
+
+The original EarthWorm lab traffic models the common zero-tail control records cleanly, but the public NCSC Pygmy Goat writeup documents a related variant where a pool number is assigned and then reused across later control records.
+
+This repository now includes a first follow-on set for that variant:
+
+- sample PCAPs `ew-test-07` through `ew-test-10` under `sample-pcaps/`
+- a synthetic generator at `tools/generate_pool_variant_pcaps.py`
+- validation notes in `docs/POOL-VARIANT-TESTING-2026-05-16.md`
+
+For the Part 2 add-on that explains the pool-number cases, detection implications, and how the lab now supports this workflow, start here:
+
+- `docs/PART-2-PYGMY-GOAT.md`
 
 ## Output directory
 
 - Saved lab captures: `./pcaps/`
+
+## Maintenance
+
+### VS Code socket refresh helper
+
+If the remote `code` command starts failing because the shell is holding a stale
+VS Code IPC socket, a helper script is available here:
+
+- `/home/claw/.openclaw/workspace/vscode-kick.sh`
+
+Refresh the current shell with:
+
+```bash
+source /home/claw/.openclaw/workspace/vscode-kick.sh
+```
+
+Or refresh and immediately try to open a file with:
+
+```bash
+source /home/claw/.openclaw/workspace/vscode-kick.sh /full/path/to/file
+```

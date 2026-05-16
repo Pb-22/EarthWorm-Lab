@@ -19,21 +19,21 @@ These are drafts based on the current EarthWorm lab data set and should be treat
 
 Observed on the long lived control channel:
 
-- `01 01 00 00 00 00`
-- `01 02 00 00 00 00`
-- often `01 03 00 00 00 00`
+- client -> server: `01 01 00 00 00 00`
+- server -> client: `01 02 00 00 00 00`
+- often server -> client: `01 03 00 00 00 00`
 - repeated `01 03 00 00 00 00` may continue later
 
 ### Request stage stream
 
 Observed when a new tunneled request is created:
 
-- `01 04 00 00 00 00`
-- `01 05 00 00 00 00`
+- client -> server: `01 04 00 00 00 00`
+- server -> client: `01 05 00 00 00 00`
 - then SOCKS negotiation bytes:
-  - `05 02 00 01`
-  - `05 00`
-  - `05 01 00 01 ...`
+  - server -> client: `05 02 00 01`
+  - client -> server: `05 00`
+  - server -> client: `05 01 00 01 ...`
 
 ---
 
@@ -89,10 +89,10 @@ Observed when a new tunneled request is created:
 **Draft behavior:**
 
 - require `ew.setup.stage1`
-- match `01 02 00 00 00 00`
-- set `ew.setup.confirmed`
-- optionally add a second companion rule to observe `01 03` and strengthen confidence without forcing it into the alert condition
-- do not alert yet
+- match server -> client `01 02 00 00 00 00`
+- alert here for the first robust high-confidence setup-stage detection
+- optionally set `ew.setup.confirmed`
+- optionally add a second companion noalert rule to observe `01 03` as continuation without making it mandatory
 
 ### Rule 3
 
@@ -104,15 +104,14 @@ Observed when a new tunneled request is created:
 
 **Draft behavior:**
 
-- require `ew.setup.confirmed`
-- alert on `01 03 00 00 00 00` if present very early in the stream
-- alternatively alert on `01 02` when stage1 is already set if you want a tighter 2 step setup detection
+- in the current rule draft, the alert fires on server -> client `01 02 00 00 00 00` after an earlier client -> server `01 01 00 00 00 00`
+- `01 03 00 00 00 00` is treated as optional corroborating continuation rather than a required alert condition
 
 **Tradeoff:**
 
 - alerting on `01 03` gives a more complete setup stage sequence when it exists
 - but `01 03` does not appear in every short reconnect sample
-- alerting on `01 02` after a prior `01 01` may be the more robust high confidence draft for first testing
+- alerting on `01 02` after a prior `01 01` is the more robust high-confidence draft for first testing and is what the current rule file now does
 
 ---
 
@@ -152,9 +151,9 @@ This should be labeled as a medium confidence request stage detection because it
 **Logic:**
 
 - on a new TCP connection
-- inspect the first small payload bearing records
-- if you observe `01 01 00 00 00 00` followed by `01 02 00 00 00 00`
-- optionally strengthen when `01 03 00 00 00 00` follows soon after
+- inspect both directions, not just originator payloads
+- if you observe client -> server `01 01 00 00 00 00` followed by server -> client `01 02 00 00 00 00`
+- optionally strengthen when server -> client `01 03 00 00 00 00` follows soon after
 - raise a Notice tagged as setup stage
 
 ### Notice 2
@@ -165,9 +164,9 @@ This should be labeled as a medium confidence request stage detection because it
 
 **Logic:**
 
-- observe `01 04 00 00 00 00`
-- then `01 05 00 00 00 00`
-- then immediate SOCKS negotiation bytes on the same request stream
+- observe client -> server `01 04 00 00 00 00`
+- then server -> client `01 05 00 00 00 00`
+- then server -> client SOCKS negotiation bytes `05 02 00 01` on the same request stream
 - raise a Notice tagged as post setup request stage
 
 ---
@@ -189,3 +188,37 @@ For first implementation, I would build:
 2. `EARTHWORM Post Setup Request Stage SOCKS Sequence`
 
 That preserves the communication stage in the detection name and gives a cleaner operational story when reviewing alerts.
+
+---
+
+## Pool-number / Pygmy Goat follow-on
+
+The newer sample set extends the lab and public test material beyond the zero-tail EarthWorm records.
+
+Relevant public samples:
+
+- `ew-test-07-pool-disabled-zero.pcap`
+- `ew-test-08-pool-enabled-04d2.pcap`
+- `ew-test-09-pool-enabled-1337.pcap`
+- `ew-test-10-pool-mismatch-04d2-1337.pcap`
+
+Those captures model this sequence family:
+
+- `01 03 <pool>`
+- `01 04 <pool>`
+- `01 05 <pool>`
+
+### Current detection takeaway
+
+The pool-aware follow-on is useful for testing and protocol grounding, but the current plain-Suricata equality attempt is not validated yet.
+
+In practical terms:
+
+- exact vanilla six-byte zero-tail matching is in good shape
+- pool-bearing Pygmy Goat-style matching is useful as a research branch
+- equality enforcement between `01 04` and `01 05` should still be treated as unresolved unless a stronger mechanism proves out
+
+For the fuller write-up, protocol context, and reproduction guidance, see:
+
+- `docs/PART-2-PYGMY-GOAT.md`
+- `docs/POOL-VARIANT-TESTING-2026-05-16.md`
