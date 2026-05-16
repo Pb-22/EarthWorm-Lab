@@ -12,6 +12,15 @@ These curated captures are included for people who want to inspect EarthWorm lab
 - `ew-test-05-handshake-delayed-http.pcap` — fresh setup sequence with delayed request activity
 - `ew-test-06-tunnel-activity-multi-http.pcap` — request-stage activity with multiple tunneled HTTP requests
 
+## Pool-number variant set (continued numbering)
+
+These `ew-test-07` through `ew-test-10` captures were generated on May 16, 2026 from the current EarthWorm lab container to extend the public sample set with synthetic Pygmy-Goat-style pool-number cases.
+
+- `ew-test-07-pool-disabled-zero.pcap` — baseline zero-pool sequence: `01 03 00 00 00 00`, `01 04 00 00 00 00`, `01 05 00 00 00 00`
+- `ew-test-08-pool-enabled-04d2.pcap` — pool-enabled matched sequence using pool `0x000004d2`
+- `ew-test-09-pool-enabled-1337.pcap` — pool-enabled matched sequence using pool `0x00001337`
+- `ew-test-10-pool-mismatch-04d2-1337.pcap` — mismatch case where setup/request use `0x000004d2` but the response echoes `0x00001337`
+
 ## Suggested starting point
 
 If you only want to open one PCAP first, start with:
